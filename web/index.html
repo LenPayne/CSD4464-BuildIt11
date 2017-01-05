@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>JPA Example</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="http://code.jquery.com/jquery.min.js"></script>
+        <script>
+            function getProducts() {
+                $.getJSON('r/product', function (data) {
+                    $('#contents').html('');
+                    for (var i = 0; i < data.length; i++) {
+                        $('#contents').append("<tr><td>" + data[i].Name + "</td>" +
+                                "<td>" + data[i].Description + "</td><td>" +
+                                data[i].Quantity + "</td><td>" +
+                                "<button onclick=del(" + data[i].ProductID + ")>Delete</button></td></tr>");
+                    }
+                });
+            }
+            function del(id) {
+                $.ajax({
+                    url: 'r/product/' + id,
+                    method: 'delete',
+                    success: getProducts
+                });
+            }
+            $(document).ready(function () {
+                getProducts();
+                $('#addButton').click(function () {
+                    $.ajax({
+                        url: 'r/product',
+                        method: 'post',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            Name: $('#name').val(),
+                            Description: $('#description').val(),
+                            Quantity: $('#quantity').val()
+                        }),
+                        success: getProducts
+                    })
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <p>Name: <input id="name" /></p>
+        <p>Description: <input id="description" /></p>
+        <p>Quantity: <input id="quantity" /></p>
+        <p><button id="addButton">Add to DB</button></p>
+        <div id="contents"></div>
+    </body>
+</html>
